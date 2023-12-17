@@ -12,7 +12,7 @@
     }
 ```
 * Write a function to launch the kernel in `src/Add_kernel.cu`
-```
+```CUDA
     template <typename T>
     void launch_add_kernel(cudaStream_t stream, const int size, T* A, T* B, T* C) {
         constexpr int threadsPerBlock = 256;
@@ -21,7 +21,7 @@
     }
 ```
 * Write a function that accepts pytorch tensors and return tensor in `src/Add.cpp`
-```
+```C++
     template <typename T>
     at::Tensor Add(const at::Tensor& a, const at::Tensor& b) {
         assert(a.numel() == b.numel());
@@ -41,19 +41,19 @@
 
 * instantiate the template functions in `src/Add_kernel.cu` and `src/Add.cpp` for float.    
     If this is not done, the linker will complain about undefined reference to the functions.
-```
+```C++
     template void launch_add_kernel<float>(cudaStream_t stream, const int size, float* A, float* B, float* C);
     template at::Tensor Add<float>(const at::Tensor& a, const at::Tensor& b);
 ```
 
 * Use pybind11 to wrap the function in `src/bind.cpp`
-```
+```C++
     PYBIND11_MODULE(TORCH_EXTENSION_NAME, m) {
         m.def("add", &Add<float>, "Add two tensors");
     }
 ```
 * Write `setup.py` to build the extention
-```
+```python
     from setuptools import setup
     from torch.utils.cpp_extension import CUDAExtension, BuildExtension
     import os
@@ -78,7 +78,7 @@
     )
 ```
 * Build the extention
-```
+```bash
     python setup.py build
 ```
 
